@@ -1,13 +1,15 @@
 <script setup lang="ts">
 
-import { use } from 'echarts/core';
-import { PieChart } from 'echarts/charts';
-import { TitleComponent, TooltipComponent, LegendComponent } from 'echarts/components';
-import { CanvasRenderer } from 'echarts/renderers';
-import type { ComposeOption } from 'echarts/core';
-import type { PieSeriesOption } from 'echarts/charts';
-import type { TitleComponentOption, TooltipComponentOption, LegendComponentOption } from 'echarts/components';
+import {use} from 'echarts/core';
+import {PieChart} from 'echarts/charts';
+import {TitleComponent, TooltipComponent, LegendComponent} from 'echarts/components';
+import {CanvasRenderer} from 'echarts/renderers';
+import type {ComposeOption} from 'echarts/core';
+import type {PieSeriesOption} from 'echarts/charts';
+import type {TitleComponentOption, TooltipComponentOption, LegendComponentOption} from 'echarts/components';
 import VChart from 'vue-echarts'
+import PageContainer from "@/components/PageContainer.vue";
+
 use([TitleComponent, TooltipComponent, LegendComponent, PieChart, CanvasRenderer]);
 type EChartsOption = ComposeOption<| TitleComponentOption | TooltipComponentOption | LegendComponentOption | PieSeriesOption>;
 
@@ -82,11 +84,11 @@ const option = {
       type: 'pie',
       radius: '50%',
       data: [
-        { value: 1048, name: 'Search Engine' },
-        { value: 735, name: 'Direct' },
-        { value: 580, name: 'Email' },
-        { value: 484, name: 'Union Ads' },
-        { value: 300, name: 'Video Ads' }
+        {value: 1048, name: 'Search Engine'},
+        {value: 735, name: 'Direct'},
+        {value: 580, name: 'Email'},
+        {value: 484, name: 'Union Ads'},
+        {value: 300, name: 'Video Ads'}
       ],
       emphasis: {
         itemStyle: {
@@ -101,16 +103,11 @@ const option = {
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
-    <n-card>
-      <template #header>
-        分析页
-      </template>
+  <page-container>
+    <n-card class="w-full !h-full !flex-grow">
+      <v-chart :option="option" class="w-full min-h-96"/>
     </n-card>
-    <n-card class="w-full !h-full !flex-grow mt-2">
-      <v-chart :option="option" class="w-full min-h-96" />
-    </n-card>
-  </div>
+  </page-container>
 </template>
 
 <style scoped>

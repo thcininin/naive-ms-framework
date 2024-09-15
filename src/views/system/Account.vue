@@ -9,6 +9,8 @@ import type {DropdownOption, Pagination, TableColumn} from "@/type/common";
 import ShowOrEdit from "@/components/editableTable/ShowOrEdit.vue";
 import {NButton, NButtonGroup, NDropdown} from "naive-ui";
 import ContextMenu from "@/components/ContextMenu.vue";
+import {Stripe} from '@vicons/fa'
+import {Refresh} from '@vicons/tabler'
 
 const accList = ref<Acc[]>();
 requestHandler<Acc[]>("GET", "/account")
@@ -108,6 +110,7 @@ const xRef = ref(0);
 const yRef = ref(0);
 // 右键菜单ref
 const tableContextMenuRef = ref<InstanceType<typeof ContextMenu>>();
+const striped = ref(false);
 
 function handleTabsContextMenu(e: MouseEvent) {
   e.preventDefault();
@@ -132,17 +135,43 @@ function findClickedTab(e: MouseEvent) {
 
 <template>
   <page-container>
-    <n-card>
+    <n-card class="flex-grow" content-class="w-full h-full flex">
       <template #header>
-        用户管理
+        <n-form inline label-placement="left">
+          <n-form-item>
+            <n-button type="info">
+              新增用户
+            </n-button>
+          </n-form-item>
+          <n-form-item label="">
+            <n-input placeholder="请输入员工姓名" clearable></n-input>
+          </n-form-item>
+          <n-form-item>
+            <n-button type="info" tertiary>搜索</n-button>
+          </n-form-item>
+          <div class="flex-grow"></div>
+          <n-form-item>
+            <n-flex size="large">
+              <n-button text>
+                <template #icon>
+                  <n-icon :component="Refresh"></n-icon>
+                </template>
+              </n-button>
+              <n-button text @click="striped = !striped">
+                <template #icon>
+                  <n-icon :component="Stripe" size="30" />
+                </template>
+              </n-button>
+            </n-flex>
+          </n-form-item>
+        </n-form>
       </template>
-    </n-card>
-    <n-card class="mt-2 flex-grow" content-class="w-full h-full flex">
       <editable-table
           :data="accList"
           :columns="cols"
           :key="(row: Acc) => row.id"
           :pagination="pagination"
+          :striped="striped"
           @contextmenu="handleTabsContextMenu"
       />
       <context-menu ref="tableContextMenuRef" :options="options" :x="xRef" :y="yRef"/>

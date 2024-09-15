@@ -5,6 +5,8 @@ import PageContainer from "@/components/PageContainer.vue";
 
 <template>
   <page-container>
+    page details
+    {{ $route.params.id}}
   </page-container>
 </template>
 

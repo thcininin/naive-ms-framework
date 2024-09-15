@@ -5,12 +5,7 @@ import PageContainer from "@/components/PageContainer.vue";
 
 <template>
   <page-container>
-    <n-card>
-      <template #header>
-        工作台
-      </template>
-    </n-card>
-    <n-card class="flex-grow mt-2">
+    <n-card class="flex-grow">
       flex-grow
     </n-card>
   </page-container>

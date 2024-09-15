@@ -74,7 +74,7 @@ function findClickedTab(e: MouseEvent) {
         @close="(name: string) => removeTab(name)"
         @contextmenu="handleTabsContextMenu"
         tab-class="!bg-white"
-        class="p-1"
+        class="py-1 px-4"
     >
       <n-tab v-for="tab in tabList" :name="tab.name" :tab="tab.label"/>
     </n-tabs>

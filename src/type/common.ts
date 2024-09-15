@@ -3,7 +3,7 @@ import type {VNode} from "vue";
 type StringOrNumber = string | number;
 export type Tab = {
     label: string,
-    name: string
+    name: string,
 }
 export type DropdownOption = {
     label: string ,
@@ -22,4 +22,12 @@ export type Pagination = {
     pageSize: StringOrNumber,
     pageCount: StringOrNumber,
     pageCallback: (page: StringOrNumber) => void,
+}
+export type ListOption = {
+    header: string,
+    extra: string,
+    tags: string[]
+    content: string,
+    time: string,
+    level?: 'info' | 'warning' | 'error'
 }

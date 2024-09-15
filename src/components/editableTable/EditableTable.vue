@@ -7,7 +7,8 @@ export type EditableTableProps<T> = {
   columns: TableColumn<T>[],
   data: T[],
   key: (key: keyof T) => string,
-  pagination: Pagination
+  pagination: Pagination,
+  striped: boolean
 }
 
 const props = defineProps<EditableTableProps<any>>();
@@ -32,7 +33,7 @@ function handlePageChange(page: number) {
       :columns="columns"
       :data="props.data"
       :key="props.key"
-      striped
+      :striped="props.striped"
       row-class-name="h-16"
       remote
       :pagination="pagination"
