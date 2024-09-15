@@ -31,3 +31,7 @@ export type ListOption = {
     time: string,
     level?: 'info' | 'warning' | 'error'
 }
+export type ButtonType = 'default' | 'tertiary' | 'primary' | 'success' | 'info' | 'warning' | 'error'
+export type ButtonSize = 'tiny' |'small' |'medium' | 'large'
+export type SwitchSize = Omit<ButtonSize, 'tiny'>
+export type OperationType = 'add' | 'edit'
