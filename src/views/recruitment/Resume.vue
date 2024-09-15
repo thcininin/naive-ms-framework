@@ -6,6 +6,7 @@ import {ref} from "vue";
 import {requestHandler} from "@/utils/requestHandler";
 import DrawerContainer from "@/components/DrawerContainer.vue";
 import ResumeDetails from "@/views/recruitment/components/ResumeDetails.vue";
+import FlexGrowCard from "@/components/FlexGrowCard.vue";
 
 const resumeList = ref<any>([]);
 const loading = ref(false);
@@ -20,29 +21,31 @@ requestHandler<any>("GET", "/resume").then(res =>{
   })
   loading.value = false
 });
-const drawerRef = ref(false);
+const drawerRef = ref<InstanceType<typeof ResumeDetails>>();
 </script>
 
 <template>
   <page-container>
 <!--    show 透传到组件中-->
-    <resume-details v-model:show="drawerRef">
-    </resume-details>
-    <preview-list
-        :skeleton-count="3"
-        :data="resumeList"
-        :loading="loading"
-        show-level
-        @click="(args: any) =>{
-          drawerRef = !drawerRef
+    <resume-details ref="drawerRef" />
+
+    <flex-grow-card>
+      <preview-list
+          :skeleton-count="3"
+          :data="resumeList"
+          :loading="loading"
+          show-level
+          @click="(data: any) =>{
+            drawerRef?.open(data)
         }"
-    >
-      <template #action>
-        <n-button @click.stop>
-          view
-        </n-button>
-      </template>
-    </preview-list>
+      >
+        <template #action>
+          <n-button @click.stop>
+            view
+          </n-button>
+        </template>
+      </preview-list>
+    </flex-grow-card>
   </page-container>
 </template>
 

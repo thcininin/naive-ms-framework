@@ -6,27 +6,25 @@ import AddButton from "@/components/button/AddButton.vue";
 import EditButton from "@/components/button/EditButton.vue";
 import DelButton from "@/components/button/DelButton.vue";
 import Switch from "@/components/Switch.vue";
-import AddJob from "@/views/recruitment/components/JobModal.vue";
 import {ref} from "vue";
-import type {OperationType} from "@/type/common";
+import {requestHandler} from "@/utils/requestHandler";
+import JobModal from "@/views/recruitment/components/JobModal.vue";
 
 
-const show = ref(false);
-const operationType = ref<OperationType>('add');
-
-function handleEdit() {
-  operationType.value = 'edit';
-  show.value = true;
-}
+const jobList = ref([]);
+const jobModalRef = ref<InstanceType<typeof JobModal>>();
+requestHandler("GET", "/job").then(res => {
+  jobList.value = res.data;
+});
 </script>
 
 <template>
   <page-container>
-    <add-job v-model:show="show" :operation-type="operationType"/>
+    <job-modal ref="jobModalRef"/>
 
     <flex-grow-card>
       <template #header>
-        <add-button label="新增职位" @click="show = true"/>
+        <add-button label="新增职位" @click="jobModalRef?.open()"/>
       </template>
       <n-grid
           cols="xs:1 sm:2 m:4 xl:5"
@@ -34,20 +32,20 @@ function handleEdit() {
           x-gap="8"
           y-gap="8"
       >
-        <n-gi v-for="i in 20" class="bg-green-50">
+        <n-gi v-for="i in jobList" class="bg-green-50">
           <n-card>
             <template #header>
-              job name
+              {{i.name}}
             </template>
             <template #header-extra>
               <Switch/>
             </template>
-            job description
+            {{i.description}}
             <template #action>
               <n-flex justify="space-between" align="center">
                 <edit-button
                     quaternary
-                    @click="handleEdit"
+                    @click="jobModalRef?.open(i)"
                 />
                 <del-button
                     quaternary
@@ -55,7 +53,7 @@ function handleEdit() {
               </n-flex>
             </template>
             <template #footer>
-              2022-01-01
+              {{i.createdAt}}
             </template>
           </n-card>
         </n-gi>

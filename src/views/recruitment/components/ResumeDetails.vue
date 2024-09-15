@@ -1,10 +1,22 @@
 <script setup lang="ts">
 
 import DrawerContainer from "@/components/DrawerContainer.vue";
+import {ref} from "vue";
+
+const show = ref(false);
+const hasArgs = ref(false);
+defineExpose({
+  open: (data?: any) => {
+    console.log(data)
+    hasArgs.value = !!data;
+    show.value = true;
+  },
+  close: () => show.value = false
+});
 </script>
 
 <template>
-  <drawer-container>
+  <drawer-container v-model:show="show">
     <template #header>
       <h1>Resume Details</h1>
     </template>

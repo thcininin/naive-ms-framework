@@ -8,7 +8,7 @@ import RouteTabs from "@/layout/components/RouteTabs.vue";
 
 const route = useRoute();
 const router = useRouter();
-const collapsed = ref(true);
+const collapsed = ref(false);
 // 头像下拉菜单
 const dropdownOptions: DropdownOption[] = [
   {
