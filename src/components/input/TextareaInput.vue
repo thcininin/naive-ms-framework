@@ -1,18 +1,25 @@
 <script setup lang="ts">
 
-defineProps<{
-  placeholder?: string,
-  rows?: string | number
+import {onMounted} from "vue";
+
+const props = defineProps<{
+  modelValue: string,
 }>();
+const emits = defineEmits(['update:value']);
+onMounted(() => {
+});
 </script>
 
 <template>
   <n-input
+      :default-value="props.modelValue"
+      v-bind="$attrs"
       type="textarea"
-      :placeholder="placeholder ? placeholder : '请输入' "
+      placeholder="请输入"
       clearable
-      :rows="rows ? rows : '2' "
+      rows="2"
       :resizable="false"
+      @update:value="(value: any) => emits('update:value', value)"
   />
 </template>
 

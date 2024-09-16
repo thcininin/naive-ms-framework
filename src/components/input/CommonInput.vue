@@ -1,14 +1,18 @@
 <script setup lang="ts">
 
-defineProps<{
-  placeholder?: string
+const props = defineProps<{
+  modelValue: string,
 }>();
+const emits = defineEmits(['update:value']);
 </script>
 
 <template>
   <n-input
-      :placeholder="placeholder ? placeholder : '请输入' "
+      :default-value="props.modelValue"
+      v-bind="$attrs"
+      placeholder="请输入"
       clearable
+      @update:value="(value: any) => emits('update:value', value)"
   />
 </template>
 
