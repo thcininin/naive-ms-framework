@@ -2,14 +2,20 @@
 import {type Component, toRefs} from "vue";
 import {CircleCheck, Circle} from '@vicons/tabler';
 import type {SwitchSize} from "@/type/common";
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   checkedText?: string,
   uncheckedText?: string,
   checkedIcon?: Component,
   uncheckedIcon?: Component,
   size?: SwitchSize,
   square?: boolean
-}>();
+}>(), {
+  checkedText: '',
+  uncheckedText: '',
+  checkedIcon: CircleCheck,
+  uncheckedIcon: Circle,
+  square: false
+})
 const {
   checkedText,
   uncheckedText,
@@ -18,21 +24,26 @@ const {
   size,
   square
 } = toRefs(props);
+const emits = defineEmits(['update:value']);
 </script>
 
 <template>
-  <n-switch :size="size" :round="!square">
+  <n-switch
+      :size="size"
+      :round="!square"
+      @update:value="(value: any) => emits('update:value', value)"
+  >
     <template #checked>
-      {{ checkedText ? checkedText : '' }}
+      {{ checkedText}}
     </template>
     <template #unchecked>
-      {{ uncheckedText ? uncheckedText : '' }}
+      {{ uncheckedText }}
     </template>
     <template #checked-icon>
-      <n-icon size=20 :component="checkedIcon ? checkedIcon : CircleCheck"></n-icon>
+      <n-icon size=20 :component="checkedIcon"></n-icon>
     </template>
     <template #unchecked-icon>
-      <n-icon  :component="uncheckedIcon ? uncheckedIcon : Circle"></n-icon>
+      <n-icon  :component="uncheckedIcon"></n-icon>
     </template>
   </n-switch>
 </template>

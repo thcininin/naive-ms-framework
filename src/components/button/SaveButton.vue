@@ -14,7 +14,7 @@ const props = defineProps<{
   secondary?: boolean,
   tertiary?: boolean,
   quaternary?: boolean,
-  text?: boolean
+  text?: boolean,
 }>();
 const {
   icon,
@@ -26,8 +26,9 @@ const {
   secondary,
   tertiary,
   quaternary,
-  text
+  text,
 } = toRefs(props);
+const emits = defineEmits(['save', 'update']);
 </script>
 
 <template>

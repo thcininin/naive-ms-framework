@@ -5,6 +5,7 @@ import {onMounted, ref, onBeforeUnmount} from "vue";
 import LayoutMenu from "@/layout/components/LayoutMenu.vue";
 import type {DropdownOption} from "@/type/common";
 import RouteTabs from "@/layout/components/RouteTabs.vue";
+import {Message2} from '@vicons/tabler'
 
 const route = useRoute();
 const router = useRouter();
@@ -94,6 +95,11 @@ onBeforeUnmount(() => {
             </n-breadcrumb-item>
           </n-breadcrumb>
           <n-flex>
+            <n-button text size="large">
+              <template #icon>
+                <n-icon :component="Message2" size="25"/>
+              </template>
+            </n-button>
             <n-dropdown
                 ref="avatarDropdownRef"
                 trigger="hover"

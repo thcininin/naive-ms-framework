@@ -5,22 +5,35 @@ import FlexGrowCard from "@/components/FlexGrowCard.vue";
 import AddButton from "@/components/button/AddButton.vue";
 import EditButton from "@/components/button/EditButton.vue";
 import DelButton from "@/components/button/DelButton.vue";
-import Switch from "@/components/Switch.vue";
-import {ref} from "vue";
-import {requestHandler} from "@/utils/requestHandler";
+import {onMounted, ref} from "vue";
 import JobModal from "@/views/recruitment/components/JobModal.vue";
+import {fetchJobList} from "@/api/jobApi";
+import type {JobVo} from "@/interface/job";
 
-
-const jobList = ref([]);
+const jobList = ref<JobVo[]>([]);
 const jobModalRef = ref<InstanceType<typeof JobModal>>();
-requestHandler("GET", "/job").then(res => {
-  jobList.value = res.data;
+function getJobList() {
+  fetchJobList().then(res => jobList.value = res.data);
+}
+function refresh(newData: JobVo) {
+  const index = jobList.value.findIndex(job => job.id === newData.id);
+  if (index === -1) {
+    jobList.value.unshift(newData);
+  } else {
+    Object.assign(jobList.value[index], newData);
+  }
+}
+onMounted(() => {
+  getJobList();
 });
 </script>
 
 <template>
   <page-container>
-    <job-modal ref="jobModalRef"/>
+    <job-modal ref="jobModalRef"
+               @updated="refresh"
+               @saved="refresh"
+    />
 
     <flex-grow-card>
       <template #header>
@@ -32,20 +45,17 @@ requestHandler("GET", "/job").then(res => {
           x-gap="8"
           y-gap="8"
       >
-        <n-gi v-for="i in jobList" class="bg-green-50">
+        <n-gi v-for="job in jobList" class="bg-green-50">
           <n-card>
             <template #header>
-              {{i.name}}
+              {{job.name}}
             </template>
-            <template #header-extra>
-              <Switch/>
-            </template>
-            {{i.description}}
+            {{job.description}}
             <template #action>
               <n-flex justify="space-between" align="center">
                 <edit-button
                     quaternary
-                    @click="jobModalRef?.open(i)"
+                    @click="jobModalRef?.open(job)"
                 />
                 <del-button
                     quaternary
@@ -53,7 +63,7 @@ requestHandler("GET", "/job").then(res => {
               </n-flex>
             </template>
             <template #footer>
-              {{i.createdAt}}
+              {{job.createdAt}}
             </template>
           </n-card>
         </n-gi>

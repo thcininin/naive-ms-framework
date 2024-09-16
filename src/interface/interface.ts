@@ -3,6 +3,10 @@ export interface R<T> {
     msg: string,
     data: T
 }
+export interface BaseInterface {
+    readonly id: string,
+    readonly createdAt: string,
+}
 
 export interface Acc {
     id: string,

@@ -1,15 +1,24 @@
 <script  lang="ts" setup="">
 
-import type {ListOption} from "@/type/common";
+import {type ListOption, ListOptionLevelClass} from "@/type/common";
+import {Time} from '@vicons/carbon'
+import {Separator} from '@vicons/tabler'
+import Switch from "@/components/Switch.vue";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   data: ListOption[],
-  loading: boolean,
+  loading?: boolean,
   skeletonCount: string | number,
   lineClamp?: string | number,
-  showLevel?: boolean
-}>();
-const emits = defineEmits(['click']);
+  showLevel?: boolean,
+  rawData: any[]
+}>(), {
+  lineClamp: 2,
+  showLevel: false,
+  loading: false,
+  skeletonCount: 3
+})
+const emits = defineEmits(['click', 'switch']);
 </script>
 
 <template>
@@ -36,46 +45,81 @@ const emits = defineEmits(['click']);
         v-for="item in props.data"
         :key="item"
         class="flex items-center"
-        @click="() => emits('click', item)"
+        @click="() => emits('click', props.rawData[props.rawData.findIndex(r => r.id === item.id)])"
     >
       <template #prefix v-if="props.showLevel">
         <div
             class="w-1 h-14"
-            :class="item.level === 'info' ? 'bg-blue-500' : item.level === 'warning' ? 'bg-yellow-500' : 'bg-red-500' "
+            :class="ListOptionLevelClass[<NonNullable<ListOption['level']>>item.level]"
         />
       </template>
-      <n-thing>
+      <n-thing content-indented>
         <template #avatar>
-          <n-avatar size="large">
-          </n-avatar>
+          <n-avatar
+              v-if="item.avatar"
+              size="large"
+          />
         </template>
         <template #header>
           {{item.header}}
         </template>
         <template #header-extra>
-          header-extra
+          <n-gradient-text
+              v-if="item.extraType === 'text' "
+              type="info"
+          >
+            {{item.extraText}}
+          </n-gradient-text>
+          <Switch
+              v-else-if="item.extraType === 'switch' && item.switchOption && item.switchOption.active !== undefined"
+              v-model:value="item.switchOption.active"
+              :checked-text="item.switchOption?.checkedText"
+              :unchecked-text="item.switchOption?.uncheckedText"
+              :loading="item.switchLoading"
+              @click.stop
+              @update:value="() => emits('switch', item)"
+          />
         </template>
         <template #description>
-          <n-flex>
-            <n-tag v-for="i in item.tags" size="small">
-              tag{{i}}
+          <n-flex v-if="item.tags && item.tags.length > 0">
+            <n-tag v-for="tag in item.tags" size="small" type="info">
+              {{tag}}
             </n-tag>
           </n-flex>
         </template>
         <template #default>
-          <n-ellipsis :line-clamp="props.lineClamp ? props.lineClamp : 2" :tooltip="false">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores eligendi et inventore libero sed. Alias aperiam architecto dolores, et explicabo illo ipsa nam neque odio sed unde vel veniam vero.
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores eligendi et inventore libero sed. Alias aperiam architecto dolores, et explicabo illo ipsa nam neque odio sed unde vel veniam vero.
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores eligendi et inventore libero sed. Alias aperiam architecto dolores, et explicabo illo ipsa nam neque odio sed unde vel veniam vero.
-            {{item.content}}
+          <n-ellipsis
+              v-html="item.content"
+              :line-clamp="props.lineClamp ? props.lineClamp : 2"
+              :tooltip="false"
+          >
           </n-ellipsis>
         </template>
         <template #footer>
-          2022-01-01
-          {{item.time}}
-        </template>
-        <template #action>
-          <slot name="action"></slot>
+          <n-flex justify="start" align="center" size="large">
+            <n-flex
+                v-if="item.startTime"
+                justify="start"
+                align="center"
+                size="small"
+            >
+              <n-icon :component="Time" />
+              <span>{{item.startTime}}</span>
+            </n-flex>
+            <n-icon
+                v-if="item.endTime"
+                :component="Separator"
+            />
+            <n-flex
+                v-if="item.endTime"
+                justify="start"
+                align="center"
+                size="small"
+            >
+              <n-icon :component="Time"/>
+              <span>{{item.endTime}}</span>
+            </n-flex>
+          </n-flex>
         </template>
       </n-thing>
     </n-list-item>

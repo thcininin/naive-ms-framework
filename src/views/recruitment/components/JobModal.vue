@@ -5,15 +5,21 @@ import CommonInput from "@/components/input/CommonInput.vue";
 import SaveButton from "@/components/button/SaveButton.vue";
 import TextareaInput from "@/components/input/TextareaInput.vue";
 import {computed, reactive, ref} from "vue";
+import {createJob, updateJob} from "@/api/jobApi";
+import naiveui from "@/utils/naiveui";
+import type {JobVo} from "@/interface/job";
 
 defineExpose({
-  open: (data?: any) => {
+  open: (data?: JobVo) => {
     hasArgs.value = !!data;
     show.value = true;
-    formData = {...data};
+    rawData.value = {...data};
+    formData = {name: <string>data?.name, description: <string>data?.description};
   },
   close: () => show.value = false
 });
+const emits = defineEmits(['updated', 'saved']);
+const rawData = ref<JobVo>();
 const show = ref(false);
 const hasArgs = ref(false);
 const title = computed(() => hasArgs.value? '编辑职位' : '新增职位');
@@ -21,6 +27,23 @@ let formData = reactive({
   name: '',
   description: ''
 });
+function handleCreateJob() {
+  createJob(formData).then(res => {
+    naiveui.message.success(res.msg);
+    emits('saved', res.data);
+    show.value = false;
+  });
+}
+function handleUpdateJob() {
+  if(rawData.value) {
+    updateJob(<string>rawData.value.id, formData).then(res => {
+      naiveui.message.success(res.msg);
+      emits('updated', res.data);
+      show.value = false;
+    });
+
+  }
+}
 </script>
 
 <template>
@@ -43,7 +66,9 @@ let formData = reactive({
       </n-form-item>
     </n-form>
     <template #action>
-      <save-button @click="console.log(formData)"/>
+      <save-button
+         @click="() => hasArgs ? handleUpdateJob() : handleCreateJob()"
+      />
     </template>
   </modal-container>
 </template>
