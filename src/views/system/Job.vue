@@ -45,8 +45,8 @@ onMounted(() => {
           x-gap="8"
           y-gap="8"
       >
-        <n-gi v-for="job in jobList" class="bg-green-50">
-          <n-card>
+        <n-gi v-for="job in jobList">
+          <n-card class="w-full h-full">
             <template #header>
               {{job.name}}
             </template>

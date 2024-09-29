@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {useRoute, useRouter} from "vue-router";
-import {computed, nextTick, ref, toRefs} from "vue";
+import {computed, nextTick, ref, toRef, toRefs} from "vue";
 import {tabHandler} from "@/utils/tabHandler";
 import type {DropdownOption, Tab} from "@/type/common";
 import ContextMenu from "@/components/ContextMenu.vue";
@@ -10,12 +10,12 @@ const route = useRoute();
 const router = useRouter();
 
 // 解构tabs的数组以及操作函数
-const {tabs} = toRefs(tabHandler());
+const {tabs} = tabHandler();
 const {removeTab, removeOtherTab, removeAllTabs} = tabHandler();
 // tabs对象
 const tabList = computed<Tab[]>(() => tabs.value);
 // 初始选中路由
-const activeTabName = computed<string>(() => <string>route.name);
+const activeTabName = ref<string>(<string>route.name);
 // 右键菜单位置
 const xRef = ref(0);
 const yRef = ref(0);

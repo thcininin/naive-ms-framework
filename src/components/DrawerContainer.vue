@@ -5,16 +5,18 @@ import type DrawerContainer from "@/components/DrawerContainer.vue";
 
 const show = ref(false);
 const drawerRef = ref<InstanceType<typeof DrawerContainer>>();
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   width?: string,
-}>();
+}>(), {
+  width: '40%'
+})
 </script>
 
 <template>
   <n-drawer
       ref="drawerRef"
       v-model:show="show"
-      :width="props.width ? props.width : '40%'"
+      :width="props.width"
       class="drawer-container"
   >
     <n-drawer-content

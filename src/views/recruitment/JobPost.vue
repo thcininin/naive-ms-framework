@@ -4,15 +4,23 @@ import PageContainer from "@/components/PageContainer.vue";
 import FlexGrowCard from "@/components/FlexGrowCard.vue";
 import AddButton from "@/components/button/AddButton.vue";
 import PreviewList from "@/components/PreviewList.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, provide, ref} from "vue";
 import type {JobPostVo} from "@/interface/jobPost";
 import {fetchJobPostList, toggleActive} from "@/api/jobPostApi";
 import type {ListOption} from "@/type/common";
 import {generateJobPostTags} from "@/utils/commonUtil";
 import naiveui from "@/utils/naiveui";
 import JobPostDetails from "@/views/recruitment/components/JobPostDetails.vue";
-import type {JobVo} from "@/interface/job";
-
+import treeData from 'china-area-tree-data';
+const provinceCityData = treeData
+provinceCityData.forEach((data: any) => {
+  if (data.children && data.children.length > 0) {
+    data.children.forEach((child: any) => {
+      delete child.children
+    });
+  }
+});
+provide('provinceCityData', provinceCityData);
 const jobPostList = ref<JobPostVo[]>([]);
 const preList = ref<ListOption[]>([]);
 const switchLoading = ref(false);
@@ -29,7 +37,6 @@ function getJobPostList() {
         extraType: 'switch',
         content: item.description,
         startTime: item.postDate,
-        endTime: item.deadline,
         level: item.active ? 'success' : 'default',
         tags: generateJobPostTags(item)
       }

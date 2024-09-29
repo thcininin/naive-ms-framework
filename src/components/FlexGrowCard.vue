@@ -7,7 +7,7 @@ import { useSlots } from 'vue';
 </script>
 
 <template>
-  <n-card class="flex-grow" content-class="w-full h-full">
+  <n-card class="flex-grow flex" content-class="flex flex-col">
     <template v-for="(content, name) in $slots" v-slot:[name]>
       <slot :name="name"></slot>
     </template>

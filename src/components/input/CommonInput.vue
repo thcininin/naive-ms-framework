@@ -1,7 +1,10 @@
 <script setup lang="ts">
 
 const props = defineProps<{
-  modelValue: string,
+  modelValue: {
+    type: string,
+    default: ''
+  },
 }>();
 const emits = defineEmits(['update:value']);
 </script>

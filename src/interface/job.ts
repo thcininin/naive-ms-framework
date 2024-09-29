@@ -6,3 +6,4 @@ export interface Job extends BaseInterface{
 }
 export type JobVo = Partial<Job>
 export type JobDto = Omit<Job, 'id' | 'createdAt'>
+export type JobVoLite = Pick<Job, 'id' | 'createdAt' | 'name'>

@@ -2,13 +2,11 @@ import {type RouteLocationNormalizedLoadedGeneric, type RouteRecordRaw, RouterLi
 import type {MenuOption} from "naive-ui";
 import {NIcon} from "naive-ui";
 import {type Component, h} from "vue";
+import type {MenuVo} from "@/interface/menu";
 
-
-const route = useRoute();
-const router = useRouter();
 
 function renderIcon(icon: Component) {
-    return () => h(NIcon, null, { default: () => h(icon) })
+    return () => h(NIcon, null, { default: () => h(icon) });
 }
 function renderRouterLink(route: RouteRecordRaw) {
     return () => h(RouterLink, {to: {name: route.name}}, {default: () => route.meta?.title});
@@ -17,7 +15,7 @@ export function generateMenuOptions(rootRoutes: RouteRecordRaw[]) {
     return rootRoutes
         .map(r => {
             const menuItem: MenuOption = {
-                label: r.children ? r.meta!.title : renderRouterLink(r),
+                label: hasChildren(r) ? r.meta!.title : renderRouterLink(r),
                 key: <string>r.name,
                 icon: r.meta!.icon ? renderIcon(r.meta!.icon) : undefined,
             }
@@ -26,6 +24,11 @@ export function generateMenuOptions(rootRoutes: RouteRecordRaw[]) {
             }
             return menuItem;
         });
+
+    function hasChildren(route: RouteRecordRaw) {
+        return route.children && route.children.length > 0;
+    }
+
 }
 
 export function routeTabs() {

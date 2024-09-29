@@ -1,14 +1,15 @@
 <script  lang="ts" setup="">
 
 import {type ListOption, ListOptionLevelClass} from "@/type/common";
-import {Time} from '@vicons/carbon'
+import {Time, Link} from '@vicons/carbon'
 import {Separator} from '@vicons/tabler'
 import Switch from "@/components/Switch.vue";
+import {watch} from "vue";
 
 const props = withDefaults(defineProps<{
   data: ListOption[],
   loading?: boolean,
-  skeletonCount: string | number,
+  skeletonCount?: string | number,
   lineClamp?: string | number,
   showLevel?: boolean,
   rawData: any[]
@@ -16,17 +17,17 @@ const props = withDefaults(defineProps<{
   lineClamp: 2,
   showLevel: false,
   loading: false,
-  skeletonCount: 3
+  skeletonCount: 3,
 })
 const emits = defineEmits(['click', 'switch']);
 </script>
 
 <template>
   <n-list clickable hoverable class="p-2">
-    <template #header>
+    <template #header v-if="props.header">
       <slot name="header"></slot>
     </template>
-    <template #footer>
+    <template #footer v-if="props.footer">
       <slot name="footer"></slot>
     </template>
     <n-flex vertical class="p-10" v-for="i in props.skeletonCount" :key="i" v-if="props.loading">
@@ -58,6 +59,7 @@ const emits = defineEmits(['click', 'switch']);
           <n-avatar
               v-if="item.avatar"
               size="large"
+              :src="item.avatar"
           />
         </template>
         <template #header>
@@ -77,7 +79,7 @@ const emits = defineEmits(['click', 'switch']);
               :unchecked-text="item.switchOption?.uncheckedText"
               :loading="item.switchLoading"
               @click.stop
-              @update:value="() => emits('switch', item)"
+              @update:value="(value) => emits('switch', item)"
           />
         </template>
         <template #description>
@@ -90,7 +92,7 @@ const emits = defineEmits(['click', 'switch']);
         <template #default>
           <n-ellipsis
               v-html="item.content"
-              :line-clamp="props.lineClamp ? props.lineClamp : 2"
+              :line-clamp="props.lineClamp"
               :tooltip="false"
           >
           </n-ellipsis>
@@ -120,6 +122,16 @@ const emits = defineEmits(['click', 'switch']);
               <span>{{item.endTime}}</span>
             </n-flex>
           </n-flex>
+        </template>
+        <template #action v-if="item.link">
+          <n-button text @click.stop>
+            <template #icon>
+              <n-icon :component="Link" size="16"/>
+            </template>
+            <a :href="item.link" target="_blank">
+              {{item.link}}
+            </a>
+          </n-button>
         </template>
       </n-thing>
     </n-list-item>

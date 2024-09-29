@@ -13,7 +13,7 @@ const inputRef = ref<HTMLInputElement | null>(null);
 const inputValue = ref(props.rawValue);
 
 function handleOnClick() {
-  console.log('handleOnClick');
+  // console.log('handleOnClick');
   isEdit.value = true;
   nextTick(() => {
     inputRef.value?.focus();
@@ -21,7 +21,7 @@ function handleOnClick() {
 }
 
 function handleChange() {
-  console.log("执行回调");
+  // console.log("执行回调");
   props.callback(inputValue.value);
   isEdit.value = false;
 }
@@ -32,7 +32,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <div @click="handleOnClick">
+  <div @click="handleOnClick" class="w-full">
     <n-input
         v-if="isEdit"
         ref="inputRef"

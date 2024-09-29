@@ -1,29 +1,28 @@
 <script setup lang="ts">
 
 import PageContainer from "@/components/PageContainer.vue";
-import EditableTable from "@/components/editableTable/EditableTable.vue";
-import {h, nextTick, reactive, ref} from "vue";
-import type {Acc} from "@/interface/interface";
-import {requestHandler} from "@/utils/requestHandler";
-import type {DropdownOption, Pagination, TableColumn} from "@/type/common";
+import {h, nextTick, onBeforeUnmount, onMounted, onUnmounted, ref} from "vue";
+import NaiveUiTablePlus from "@/components/NaiveUiTablePlus.vue";
+import type {DropdownOption} from "@/type/common";
 import ShowOrEdit from "@/components/editableTable/ShowOrEdit.vue";
-import {NButton, NButtonGroup, NDropdown} from "naive-ui";
+import {NButton, NButtonGroup, NDropdown, NTag, NFlex} from "naive-ui";
 import ContextMenu from "@/components/ContextMenu.vue";
-import {Stripe} from '@vicons/fa'
-import {Refresh} from '@vicons/tabler'
+import type {TableColumns, FormProps} from "naive-ui-table";
+import DelButton from "@/components/button/DelButton.vue";
+import {fetchAccountPage} from "@/api/accountApi";
+import {RoleDropdownOptions, RoleOptions} from "@/utils/commonUtil";
+import {type Role, RoleText} from "@/interface/dict";
+import type {AccountVo} from "@/interface/account";
+import FlexGrowCard from "@/components/FlexGrowCard.vue";
 
-const accList = ref<Acc[]>();
-requestHandler<Acc[]>("GET", "/account")
-    .then(res => accList.value = res.data);
-const cols: TableColumn<Acc>[] = [
-  {
-    title: 'id',
-    key: 'id',
-  },
+const accList = ref<AccountVo[]>();
+const cols: TableColumns<AccountVo> = [
   {
     title: '用户名',
     key: 'username',
-    r(row) {
+    align: 'center',
+    width: 150,
+    render(row) {
       return h(ShowOrEdit, {
         rawValue: row.username,
         callback: (v) => {
@@ -35,66 +34,140 @@ const cols: TableColumn<Acc>[] = [
     },
   },
   {
-    title: '角色',
-    key: 'role',
-    r(row) {
-      return h(NDropdown, {
-        value: row.role,
-        trigger: 'click',
-        options: [
-          {label: '启用', key: 'ACTIVE'},
-          {label: '禁用', key: 'DISABLE'},
-          {label: '归档', key: 'ARCHIVED'},
-        ],
+    title: '角色列表',
+    key: 'roles',
+    align: 'center',
+    width: 180,
+    render(row) {
+      return h(NFlex, {
+        justify: 'center',
+        align: 'center',
       }, {
-        default: () => h(NButton, {
-          tertiary: true,
-          type: "info",
-          class: 'w-20'
-        }, row.role)
-      });
+        default: () => row.roles.map(role => h(NTag, {
+          type: 'info',
+          class: 'text-center'
+        }, {
+          default: () => role.description
+        }))
+      })
     }
   },
   {
-    title: '绑定员工',
+    title: '员工',
     key: 'staff',
+    align: 'center',
+    width: 150,
+    render(row) {
+      return h(NButton, {
+        text: true
+      }, {
+        default: () => row.staff.name
+      })
+    }
+  },
+  {
+    title: '工号',
+    key: 'sid',
+    align: 'center',
+    width: 180,
+    render(row) {
+      return h('div', {}, {
+        default: () => row.staff.sid
+      })
+    }
+  },
+  {
+    title: '职位',
+    key: 'job',
+    align: 'center',
+    width: 180,
+    render(row) {
+      return h(NTag, {
+        type: 'info',
+      }, {
+        default: () => row.staff.job.name
+      })
+    }
   },
   {
     title: '创建时间',
     key: 'createdAt',
+    align: 'center',
+    width: 180,
   },
   {
     title: '操作',
     key: 'operations',
-    r(row) {
+    fixed: 'right',
+    align: 'center',
+    width: 180,
+    render(row) {
       return h(NButtonGroup, {
         size: 'small',
       }, {
         default: () => [
-          h(NButton, {
+          h(DelButton, {
             type: 'error',
             size: 'small',
-            tertiary: true,
-            onClick: () => console.log('edit', row)
-          }, '删除'),
+            onClick: () => console.log('delete', row)
+          }, () => '删除'),
           h(NButton, {
             type: 'warning',
             size: 'small',
-            tertiary: true,
-            onClick: () => console.log('edit', row)
-          }, '重置密码')
+            onClick: () => console.log('reset', row)
+          }, () => '重置密码')
         ]
       })
     },
   }
-]
-const pagination = reactive<Pagination>({
-  page: 1,
-  pageSize: 2,
-  pageCount: 10,
-  pageCallback: (page) => console.log(page)
-});
-
+];
+const selectedRole = ref<string | null>(null);
+const search: FormProps = {
+  schemas: [
+    {
+      label: '角色',
+      field: 'role',
+      type: 'select',
+      componentProps: {
+        placeholder: '请选择角色',
+        options: RoleOptions,
+        clearable: true,
+        onUpdateValue: (v: string) => {
+          selectedRole.value = v;
+        }
+      }
+    },
+    {
+      label: '员工',
+      field: 'staffName',
+      type: 'input',
+      componentProps: {
+        placeholder: '请输入员工姓名',
+        clearable: true
+      }
+    },
+    {
+      label: '工号',
+      field: 'sid',
+      type: 'input',
+      componentProps: {
+        placeholder: '请输入工号',
+        clearable: true
+      }
+    },
+    {
+      label: '职位',
+      field: 'job',
+      type: 'select',
+      componentProps: {
+        placeholder: '请输入职位',
+        options: []
+      }
+    },
+  ],
+  showResetBtn: true,
+  defaultExpand: true
+}
 const options: DropdownOption[] = [
   {
     label: '编辑',
@@ -131,51 +204,35 @@ function findClickedTab(e: MouseEvent) {
   }
   return null;
 }
+
+async function get(params: any) {
+  params.role = selectedRole.value;
+  const res = await fetchAccountPage(params.current, params.size, params.role, params.staffName, params.sid);
+  accList.value = res.data.records;
+  return res.data;
+}
+
+// onMounted(async () => {
+//   console.log('account mounted')
+// });
+// onBeforeUnmount(() => {
+//   console.log('account before unmount')
+// })
+// onUnmounted(() => {
+//   console.log('account unmounted')
+// })
 </script>
 
 <template>
   <page-container>
-    <n-card class="flex-grow" content-class="w-full h-full flex">
-      <template #header>
-        <n-form inline label-placement="left">
-          <n-form-item>
-            <n-button type="info">
-              新增用户
-            </n-button>
-          </n-form-item>
-          <n-form-item label="">
-            <n-input placeholder="请输入员工姓名" clearable></n-input>
-          </n-form-item>
-          <n-form-item>
-            <n-button type="info" tertiary>搜索</n-button>
-          </n-form-item>
-          <div class="flex-grow"></div>
-          <n-form-item>
-            <n-flex size="large">
-              <n-button text>
-                <template #icon>
-                  <n-icon :component="Refresh"></n-icon>
-                </template>
-              </n-button>
-              <n-button text @click="striped = !striped">
-                <template #icon>
-                  <n-icon :component="Stripe" size="30" />
-                </template>
-              </n-button>
-            </n-flex>
-          </n-form-item>
-        </n-form>
-      </template>
-      <editable-table
-          :data="accList"
+    <flex-grow-card>
+      <naive-ui-table-plus
           :columns="cols"
-          :key="(row: Acc) => row.id"
-          :pagination="pagination"
-          :striped="striped"
-          @contextmenu="handleTabsContextMenu"
+          :request-api="get"
+          :search-props="search"
       />
       <context-menu ref="tableContextMenuRef" :options="options" :x="xRef" :y="yRef"/>
-    </n-card>
+    </flex-grow-card>
   </page-container>
 </template>
 

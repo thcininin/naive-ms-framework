@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {computed, reactive, ref} from "vue";
+import {computed, reactive} from "vue";
 import type {Pagination, TableColumn} from "@/type/common";
 
 export type EditableTableProps<T> = {
@@ -8,17 +8,20 @@ export type EditableTableProps<T> = {
   data: T[],
   key: (key: keyof T) => string,
   pagination: Pagination,
-  striped: boolean
+  striped?: boolean
 }
-
 const props = defineProps<EditableTableProps<any>>();
-const columns = computed(() => props.columns.map(column => {
-  return {
-    ...column,
-    width: column.width || 100,
-    render: column.r
-  };
-}));
+const columns = computed(() => {
+  if(props.columns) {
+    return props.columns.map(column => {
+      return {
+       ...column,
+        width: column.width || 100,
+        render: column.r
+      };
+    })
+  }
+});
 const pagination = reactive({...props.pagination});
 
 function handlePageChange(page: number) {

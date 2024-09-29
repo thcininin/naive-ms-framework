@@ -1,21 +1,26 @@
 <script setup lang="ts">
 
 import {useRoute, useRouter} from "vue-router";
-import {onMounted, ref, onBeforeUnmount} from "vue";
+import {onMounted, ref, onBeforeUnmount, watch, inject} from "vue";
 import LayoutMenu from "@/layout/components/LayoutMenu.vue";
 import type {DropdownOption} from "@/type/common";
 import RouteTabs from "@/layout/components/RouteTabs.vue";
-import {Message2} from '@vicons/tabler'
+import {Message2} from '@vicons/tabler';
+import {userStoreHandler} from "@/utils/userStoreHandler";
+import type {StaffVoLite} from "@/interface/staff";
+import {logout} from "@/api/authApi";
+import {useUserStore} from "@/stores/user";
+import naiveui from "@/utils/naiveui";
 
 const route = useRoute();
 const router = useRouter();
-const collapsed = ref(false);
+const collapsed = ref(localStorage.getItem('collapsed') === 'true' || false);
 // 头像下拉菜单
 const dropdownOptions: DropdownOption[] = [
   {
     label: '退出登录',
     key: 'logout',
-    callback: () => console.log('logout callback')
+    callback: () => handleLogout()
   },
   {
     label: '个人中心',
@@ -28,8 +33,22 @@ const keydownHandler = (event: KeyboardEvent) => {
     collapsed.value = !collapsed.value;
   }
 };
-
+async function handleLogout() {
+  const res = await logout();
+  useUserStore().clearAll();
+  await router.push({name: 'Login'});
+  naiveui.message.success(res.msg);
+}
+watch(collapsed, nv => {
+  localStorage.setItem('collapsed', JSON.stringify(nv));
+});
+const staffInfo = inject<StaffVoLite | undefined>('staffInfo');
 onMounted(() => {
+  // userStoreHandler();
+  const collapsedStr = localStorage.getItem('collapsed');
+  if (collapsedStr) {
+    collapsed.value = JSON.parse(collapsedStr);
+  }
   window.addEventListener('keydown', keydownHandler);
 });
 
@@ -47,6 +66,8 @@ onBeforeUnmount(() => {
         :width="240"
         show-trigger="bar"
         bordered
+        :native-scrollbar="false"
+        class="mb-10"
         @updateCollapsed="collapsed = !collapsed"
     >
       <n-layout-header
@@ -108,9 +129,9 @@ onBeforeUnmount(() => {
                 @select="(key: string) => dropdownOptions.find(o => o.key === key)?.callback?.()"
             >
               <n-avatar
-                  :style="{color: 'yellow',backgroundColor: 'red',}"
+                  round
+                  :src="staffInfo?.avatar"
               >
-                M
               </n-avatar>
             </n-dropdown>
           </n-flex>

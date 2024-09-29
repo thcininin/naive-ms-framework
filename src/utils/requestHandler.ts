@@ -23,16 +23,13 @@ export const requestHandler = async <T>(method: Method, url: string, config?: ob
             naiveui.message.error(errorMsg);
         }
         return response.data as R<T>;
-    } catch (e) {
+    } catch (e: AxiosError | any) {
         if (e instanceof AxiosError && e.response) {
             const status = e.response.status;
             const res = e.response.data as R<T>;
             naiveui.message.error(res.msg || msgMap[status]);
-            if (status === 401) {
-                window.location.href = '/login';
-            }
         }
-        naiveui.message.error('请求失败，请稍后重试！');
+        naiveui.message.error((<R<T>>e.response.data).msg);
         throw new Error('请求失败，请稍后重试！');
     }
 }

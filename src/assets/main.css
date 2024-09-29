@@ -18,3 +18,25 @@ body,
     font-weight: 400;
     font-style: normal;
 }
+.naive-ui-table,
+.table-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.n-data-table--bordered {
+    flex: 1;
+}
+
+/*.n-data-table-base-table-body {*/
+/*    display: flex;*/
+/*    flex:1; */
+/*}*/
+/*.n-scrollbar-container {*/
+/*    flex: 1;*/
+/*}*/
+/*.n-data-table-base-table {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    flex: 1;*/
+/*}*/

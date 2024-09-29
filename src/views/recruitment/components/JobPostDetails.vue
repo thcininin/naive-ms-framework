@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import DrawerContainer from "@/components/DrawerContainer.vue";
-import {computed, onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import CommonInput from "@/components/input/CommonInput.vue";
 import SaveButton from "@/components/button/SaveButton.vue";
 import treeData from 'china-area-tree-data';
@@ -32,7 +32,7 @@ defineExpose({
     hasArgs.value = !!data;
     show.value = true;
     if(data) {
-      formData =  <JobPostDto>{
+      formData.value = {
         ...data,
         jobId: <string>data.job?.id
       };
@@ -42,7 +42,8 @@ defineExpose({
 });
 const emits = defineEmits(['published', 'updated']);
 const hideToolbarKeys = ['fullscreen', 'video', 'attachment'];
-let formData = reactive<JobPostDto | JobPostVo>({
+let formData = ref<JobPostDto & {id: string}>({
+  id: '',
   jobId: undefined,
   title: '',
   location: undefined,
@@ -53,11 +54,10 @@ let formData = reactive<JobPostDto | JobPostVo>({
   description: '',
   internship: false,
   internshipDuration: '',
-  deadline: ''
 });
 const jobList = ref<JobVo[]>([]);
 function resetForm() {
-  formData = reactive<JobPostDto>({
+  formData.value = {
     jobId: undefined,
     title: '',
     location: undefined,
@@ -67,9 +67,8 @@ function resetForm() {
     requirements: '',
     description: '',
     internship: false,
-    internshipDuration: '',
-    deadline: ''
-  })
+    internshipDuration: ''
+  }
 }
 watch(show, n => {
   if(!n) {
@@ -80,13 +79,14 @@ function getJobList() {
   fetchJobList().then(res => jobList.value = res.data);
 }
 function handlePublish() {
-  createJobPost(<JobPostDto>formData).then(res => {
+  createJobPost(<JobPostDto>formData.value).then(res => {
     naiveui.message.success(res.msg);
     show.value = false;
   });
 }
 function handleUpdate() {
-  updateJobPost(formData.id, formData).then(res => {
+  console.log(formData.value);
+  updateJobPost(formData.value.id, formData.value).then(res => {
     naiveui.message.success(res.msg);
     emits('updated', res.data);
     show.value = false;
@@ -94,8 +94,6 @@ function handleUpdate() {
 }
 onMounted(() => {
 });
-
-// FIXME some logic is missing here
 </script>
 
 <template>
@@ -123,7 +121,7 @@ onMounted(() => {
             placeholder="请输入内容"
             request-func="() => Promise.resolve('')"
             :hide-toolbar-keys="hideToolbarKeys"
-            style="height: 600px"/>
+           />
       </n-form-item>
       <n-form-item label="工作地点">
         <n-cascader
@@ -174,5 +172,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+:deep(.aie-container-main) {
+  min-height: 200px !important;
+}
 </style>

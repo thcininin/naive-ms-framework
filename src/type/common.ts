@@ -18,10 +18,10 @@ export type TableColumn<T> = {
     r?: (row: T) => VNode ,
 }
 export type Pagination = {
-    page: StringOrNumber,
-    pageSize: StringOrNumber,
-    pageCount: StringOrNumber,
-    pageCallback: (page: StringOrNumber) => void,
+    page: number,
+    pageSize: number,
+    pageCount: number,
+    pageCallback: (page: any) => void,
 }
 export type ListOption = Partial<{
     readonly id: StringOrNumber,
@@ -35,7 +35,8 @@ export type ListOption = Partial<{
     content: string,
     startTime: string,
     endTime: string,
-    level: 'default' | 'info' | 'warning' | 'error' | 'success'
+    level: 'default' | 'info' | 'warning' | 'error' | 'success',
+    link: string,
 }>
 export type ButtonType = 'default' | 'tertiary' | 'primary' | 'success' | 'info' | 'warning' | 'error'
 export type ButtonSize = 'tiny' |'small' |'medium' | 'large'
@@ -47,4 +48,9 @@ export const ListOptionLevelClass: Record<NonNullable<ListOption['level']>, stri
     warning: 'bg-yellow-500',
     error:'bg-red-500',
     success: 'bg-green-500'
+}
+export type ProvinceAndCity  = {
+    value: string,
+    label: string,
+    children?: ProvinceAndCity[]
 }

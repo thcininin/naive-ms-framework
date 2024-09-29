@@ -1,0 +1,30 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "40800705",
+      "name": "请假申请",
+      "font_class": "qingjiashenqing",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "40800724",
+      "name": "补卡申请",
+      "font_class": "bukashenqing",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "40800725",
+      "name": "加班申请",
+      "font_class": "jiabanshenqing",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    }
+  ]
+}

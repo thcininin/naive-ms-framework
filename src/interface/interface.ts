@@ -1,3 +1,4 @@
+
 export interface R<T> {
     success: boolean,
     msg: string,
@@ -7,12 +8,10 @@ export interface BaseInterface {
     readonly id: string,
     readonly createdAt: string,
 }
+export interface Page<T> {
+    records: T[],
+    total: number,
+    current: number,
+    size: number,
 
-export interface Acc {
-    id: string,
-    username: string,
-    password: string,
-    createdAt: string,
-    role: string,
-    staff: string
 }

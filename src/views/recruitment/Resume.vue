@@ -2,48 +2,64 @@
 
 import PageContainer from "@/components/PageContainer.vue";
 import PreviewList from "@/components/PreviewList.vue";
-import {ref} from "vue";
-import {requestHandler} from "@/utils/requestHandler";
-import DrawerContainer from "@/components/DrawerContainer.vue";
+import {onMounted, ref} from "vue";
 import ResumeDetails from "@/views/recruitment/components/ResumeDetails.vue";
 import FlexGrowCard from "@/components/FlexGrowCard.vue";
+import {fetchResumeList} from "@/api/resumeApi";
+import type {ResumeVo} from "@/interface/resume";
+import type {ListOption} from "@/type/common";
+import {generateResumeTags} from "@/utils/commonUtil";
 
-const resumeList = ref<any>([]);
+const resumeList = ref<ResumeVo[]>([]);
+const preList = ref<ListOption[]>([]);
 const loading = ref(false);
-requestHandler<any>("GET", "/resume").then(res =>{
-  loading.value = true
-  resumeList.value = res.data.map((item: any) => {
-    return {
-      header: item.name,
-      extra: item.expectedSalaryRange,
-      level: 'info'
-    }
-  })
-  loading.value = false
-});
 const drawerRef = ref<InstanceType<typeof ResumeDetails>>();
+
+function getResumeList() {
+  fetchResumeList().then(res => {
+    resumeList.value  = res.data;
+    preList.value = res.data.map(item => {
+      return {
+        id: item.id,
+        avatar: item.avatar,
+        header: item.name,
+        content: item.introduction,
+        extraType: 'text',
+        extraText: item.expectedSalaryRange,
+        startTime: item.appliedAt,
+        level: item.passed ? 'success' : 'warning',
+        tags: generateResumeTags(item)
+      }
+    });
+  })
+}
+onMounted(() => {
+  getResumeList();
+});
 </script>
 
 <template>
   <page-container>
-<!--    show 透传到组件中-->
     <resume-details ref="drawerRef" />
 
     <flex-grow-card>
+      <n-tabs type="bar" animated>
+        <n-tab name="all">
+          全部
+        </n-tab>
+        <n-tab name="passed">
+          已通过
+        </n-tab>
+        <n-tab name="rejected">
+          已拒绝
+        </n-tab>
+      </n-tabs>
       <preview-list
-          :skeleton-count="3"
-          :data="resumeList"
-          :loading="loading"
+          :data="preList"
+          :raw-data="resumeList"
           show-level
-          @click="(data: any) =>{
-            drawerRef?.open(data)
-        }"
+          @click="(data: ResumeVo) => drawerRef?.open(data)"
       >
-        <template #action>
-          <n-button @click.stop>
-            view
-          </n-button>
-        </template>
       </preview-list>
     </flex-grow-card>
   </page-container>

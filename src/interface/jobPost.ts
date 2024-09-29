@@ -14,7 +14,6 @@ export interface JobPost extends BaseInterface {
     internship: boolean,
     internshipDuration: string,
     postDate: string,
-    deadline: string,
     active: boolean,
 }
 export type EduLevel = 'NO_REQUIREMENT' | 'SENIOR' | 'UNDERGRADUATE' | 'POSTGRADUATE'

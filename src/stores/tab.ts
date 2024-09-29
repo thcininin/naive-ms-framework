@@ -26,7 +26,11 @@ export const useTabStore = defineStore('tab', () => {
             if(length === 0) {
                 init();
             }
-            router.push({name: length > 0 ? tabs.value[length - 1].name : initialTab.name})
+            router.push({name: length > 0 ? tabs.value[length - 1].name : initialTab.name}).then(r => {
+                console.log(r)
+            }).catch(e => {
+                console.log(e)
+            })
         }
     }
 
@@ -53,12 +57,20 @@ export const useTabStore = defineStore('tab', () => {
     function removeAllTabs() {
         tabs.value = [];
         init();
-        router.push({name: initialTab.name});
+        router.push({name: initialTab.name}).then(r => {
+            console.log(r)
+        }).catch(e => {
+            console.log(e)
+        });
     }
     function removeOtherTab(name: string) {
         tabs.value = tabs.value.filter(t => t.name === name);
         setTabs();
-        router.push({name: name});
+        router.push({name: name}).then(r => {
+            console.log(r)
+        }).catch(e => {
+            console.log(e)
+        });
     }
 
     return {

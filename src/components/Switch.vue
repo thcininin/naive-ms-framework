@@ -1,5 +1,5 @@
 <script  lang="ts" setup="">
-import {type Component, toRefs} from "vue";
+import {type Component, toRefs, useAttrs, watch} from "vue";
 import {CircleCheck, Circle} from '@vicons/tabler';
 import type {SwitchSize} from "@/type/common";
 const props = withDefaults(defineProps<{
@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<{
   checkedIcon?: Component,
   uncheckedIcon?: Component,
   size?: SwitchSize,
-  square?: boolean
+  square?: boolean,
 }>(), {
   checkedText: '',
   uncheckedText: '',
@@ -29,9 +29,12 @@ const emits = defineEmits(['update:value']);
 
 <template>
   <n-switch
+      v-bind="$attrs"
       :size="size"
       :round="!square"
-      @update:value="(value: any) => emits('update:value', value)"
+      @update:value="(value: any) => {
+        emits('update:value', value);
+      }"
   >
     <template #checked>
       {{ checkedText}}
